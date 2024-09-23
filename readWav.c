@@ -4,11 +4,7 @@
 #include <stdint.h> 
 #include <string.h>
 
-typedef struct {
-	uint32_t soundSize;
-    uint16_t *data;
-} sound_t;
-
+#include "sounds.h"
 
 int readWav(char *path, sound_t *sound) {
 	FILE *file;
@@ -55,7 +51,7 @@ int readWav(char *path, sound_t *sound) {
 
     printf("actual sample rate: %d\n", sample_rate);
 
-    assert(sample_rate == 22050);
+    assert(sample_rate == SAMPLERATE);
     fread(&bytes_per_second, 4, 1, file);
     fread(&block_align, 2, 1, file);
     fread(&bits_per_sample, 2, 1, file);
@@ -76,11 +72,11 @@ int readWav(char *path, sound_t *sound) {
     return 0;
 }
 
-int main() {
-    printf("hitter\n");
-    sound_t s;
-    char* path = "sampleAudio/redhot.wav";
-    readWav(path,&s);
-    printf("# of samples : %d \n", s.soundSize);
-    return 0;
-}
+/*int main() {*/
+    /*printf("hitter\n");*/
+    /*sound_t s;*/
+    /*char* path = "sampleAudio/redhot.wav";*/
+    /*readWav(path,&s);*/
+    /*printf("# of samples : %d \n", s.soundSize);*/
+    /*return 0;*/
+/*}*/
