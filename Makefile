@@ -2,19 +2,19 @@ CC = gcc
 CFLAGS = -g -Wall -Wextra -Wpedantic --std=c17
 
 #targets
-extractAudio: readWav.o timeDFeatures.o
-	$(CC) $(CFLAGS) $^ -o $@
+features: readWav.o features.o
+	$(CC) $(CFLAGS) $^ -o $@ -lm
 
 #object files
 readWav.o: readWav.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-timeDFeatures.o: timeDFeatures.c
+features.o: features.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 
 #cleanup
 clean:
-	rm *.o readWav
+	rm *.o features 
 
 .PHONY: clean

@@ -44,7 +44,6 @@ int readWav(char *path, sound_t *sound) {
 	// change this later idk how many channels
 	assert(num_channels == 1);
 
-    printf("hit\n");
     fread(&sample_rate, 4, 1, file);
     // STANDARD SAMPLING RATE -> follows nyquist
     /*assert(sample_rate == 44100);*/
