@@ -8,8 +8,10 @@ from typing import Tuple
 # since it is a single classifier, inputs have to be the same size
 
 THRESHOLD_QUIET = 30
-RAW_PATH = "dataset/recordings"
 MEL_BANKS = 40
+
+RAW_PATH = "dataset/recordings"
+DATA_PATH = "dataset/forModel"
 
 def read_wav(path: str, intended_len: int) -> np.array:
     # read from path and digitalize + norm + convert to mels + norm
@@ -46,6 +48,7 @@ def read_files() -> Tuple[np.array, np.array]:
         
         file_name = os.path.join(RAW_PATH, sample)
         x = read_wav(file_name, max_length)
+        file_name = file_name.replace(RAW_PATH, "").lstrip(os.sep)
         file_name = file_name[:-4]
 
         data.append(x)
@@ -62,7 +65,7 @@ def split_files(data:np.array, file_names:np.array, data_split:tuple) -> None:
     assert(data.shape[0] == file_names.size)
 
     for dir_name in ['train', 'val', 'test']:
-        dir_path = os.path.join('dataset/forModel', dir_name)
+        dir_path = os.path.join(DATA_PATH, dir_name)
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
     
@@ -81,14 +84,13 @@ def split_files(data:np.array, file_names:np.array, data_split:tuple) -> None:
     print("inserting numpy files into forModel/ ")
 
     for i in dexes[:train_per]:
-        np.save(f"{file_names[i]}.npy", data[i])
+        np.save(f"{DATA_PATH}/train/{file_names[i]}.npy", data[i])
 
-    for i in dexes[train_per:val_per]:
-        np.save(f"{file_names[i]}.npy", data[i])
+    for i in dexes[train_per:train_per + val_per]:
+        np.save(f"{DATA_PATH}/val/{file_names[i]}.npy", data[i])
 
-    for i in dexes[val_per:]:
-        np.save(f"{file_names[i]}.npy", data[i])
-
+    for i in dexes[val_per+train_per:]:
+        np.save(f"{DATA_PATH}/test/{file_names[i]}.npy", data[i])
 
 if __name__ == "__main__":
     data, file_names = read_files()
