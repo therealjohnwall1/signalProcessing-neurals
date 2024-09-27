@@ -36,7 +36,10 @@ def read_wav(path: str, intended_len: int) -> np.array:
 
 
 def read_files() -> Tuple[np.array, np.array]:
-    max_length = max(len(librosa.load(os.path.join(RAW_PATH, sample))[0]) for sample in os.listdir(RAW_PATH))
+    max_length = max(
+        len(librosa.load(os.path.join(RAW_PATH, sample))[0])
+        for sample in os.listdir(RAW_PATH)
+        )
     dir_len = len(os.listdir(RAW_PATH))
 
     data = []

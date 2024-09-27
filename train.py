@@ -18,44 +18,46 @@ class AudioDataSet(Dataset):
         data = np.load(file_path)
         return torch.tensor(data, dtype=torch.float32), torch.tensor(int(file_path[len(self.data_dir)+1: len(self.data_dir)+2]), dtype=torch.int64)
 
-def load_batches(batch_size):
-    data_dir = "dataset/forModel/train"
+def load_batches(batch_size, data_dir):
+    # data_dir = "dataset/forModel/train"
     dataset = AudioDataSet(data_dir)
     return DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
 BATCH_SIZE = 64
-loader = load_batches(batch_size=BATCH_SIZE)
-
-# ---------------------------------------------------------------------------------------------------------------------------------------
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-num_classifier = digitRecog().to(device)
 
-params = list(num_classifier.parameters())
-optim = torch.optim.Adam(params,lr = 1e-3)
+if __name__ == "__main__":
+    loader = load_batches(batch_size=BATCH_SIZE,data_dir="dataset/forModel/train")
 
-EPOCH = 25
+    # ---------------------------------------------------------------------------------------------------------------------------------------
+    num_classifier = digitRecog().to(device)
 
-for i in range(EPOCH):
-    for x,y in loader:
-        X,Y = x.to(device), y.to(device)
-        # not goot pratice ik
-        if X.shape[0] < BATCH_SIZE:
-            missing = BATCH_SIZE - X.shape[0]
-            X = torch.cat((prev_X[-missing:], X), dim=0)
-            Y = torch.cat((prev_Y[-missing:], Y), dim=0)
-        prev_X, prev_Y = X, Y
-        X = X.view(BATCH_SIZE,1,40,99)
+    params = list(num_classifier.parameters())
+    optim = torch.optim.Adam(params,lr = 1e-3)
 
-        y_hat = num_classifier(X)
-        loss = F.cross_entropy(y_hat, Y)
+    EPOCH = 25
 
-        optim.zero_grad()
-        loss.backward()
+    for i in range(EPOCH):
+        for x,y in loader:
+            X,Y = x.to(device), y.to(device)
+            # not goot pratice ik
+            if X.shape[0] < BATCH_SIZE:
+                missing = BATCH_SIZE - X.shape[0]
+                X = torch.cat((prev_X[-missing:], X), dim=0)
+                Y = torch.cat((prev_Y[-missing:], Y), dim=0)
+            prev_X, prev_Y = X, Y
+            X = X.view(BATCH_SIZE,1,40,99)
 
-        optim.step()
-    print(f"Epoch {i}/{EPOCH}, Loss {loss.item()}")
+            y_hat = num_classifier(X)
+            loss = F.cross_entropy(y_hat, Y)
 
-# -----------------------------------------------------------------------------------------------------------
-torch.save(num_classifier.state_dict(), "numClassifier.pth")
+            optim.zero_grad()
+            loss.backward()
+
+            optim.step()
+        print(f"Epoch {i}/{EPOCH}, Loss {loss.item()}")
+
+    # -----------------------------------------------------------------------------------------------------------
+    torch.save(num_classifier.state_dict(), "numClassifier.pth")
 
 
