@@ -70,12 +70,3 @@ int readWav(char *path, sound_t *sound) {
     sound->soundSize = data_size/2;
     return 0;
 }
-
-/*int main() {*/
-    /*printf("hitter\n");*/
-    /*sound_t s;*/
-    /*char* path = "sampleAudio/redhot.wav";*/
-    /*readWav(path,&s);*/
-    /*printf("# of samples : %d \n", s.soundSize);*/
-    /*return 0;*/
-/*}*/
